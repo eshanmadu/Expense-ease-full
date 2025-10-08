@@ -1,0 +1,110 @@
+{
+  "welcome": {
+    "title": "Welcome to",
+    "appName": "ExpenseEase",
+    "description": "Manage your spending effortlessly. Track expenses, visualize trends, and stay in control with clarity.",
+    "features": {
+      "secure": "Secure",
+      "fast": "Fast",
+      "private": "Private"
+    }
+  },
+
+  "Home": {
+    "description": "Track where your money goes, understand your habits, and hit your goals — with clarity.",
+    "subtitle1": "What you can do",
+    "button1": "Go to Dashboard",
+    "sub2": "Everything you need to manage money day-to-day, all in one place.",
+    "card1": "Track expenses & income",
+    "card2": "Analyze spending habits",
+    "card3": "Set budgets & savings goals",
+    "card4": "Generate detailed reports",
+    "card5": "Multi-currency support",
+    "card6": "Data export options",
+    "subdescription2": "b",
+    "subtitle3": "c",
+    "subdescription3": "d"
+    
+  },
+  "login": {
+    "title": "Sign in",
+    "subtitle": "to continue to ExpenseEase",
+    "email": "Email",
+    "password": "Password",
+    "emailPlaceholder": "you@example.com",
+    "passwordPlaceholder": "••••••••",
+    "loginButton": "Login",
+    "loggingIn": "Logging in…",
+    "noAccount": "Don't have an account?",
+    "signUp": "Sign up"
+  },
+  "signup": {
+    "title": "Create Account",
+    "subtitle": "Join ExpenseEase today",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "signUpButton": "Sign Up",
+    "signingUp": "Creating account…",
+    "hasAccount": "Already have an account?",
+    "signIn": "Sign in"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome back",
+    "totalExpenses": "Total Expenses",
+    "thisMonth": "This Month",
+    "recentTransactions": "Recent Transactions"
+  },
+  "navigation": {
+    "home": "Home",
+    "dashboard": "Dashboard",
+    "transactions": "Transactions",
+    "reports": "Reports",
+    "profile": "Profile",
+    "logout": "Logout"
+  },
+  "profile": {
+    "title": "Profile Settings",
+    "subtitle": "Manage your account information and preferences.",
+    "personalInfo": "Personal Information",
+    "fullName": "Full Name",
+    "emailAddress": "Email Address",
+    "preferredCurrency": "Preferred Currency",
+    "changePassword": "Change Password",
+    "passwordNote": "Leave password fields empty if you don't want to change your password.",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "confirmNewPassword": "Confirm New Password",
+    "accountInfo": "Account Information",
+    "memberSince": "Member since:",
+    "lastUpdated": "Last updated:",
+    "updateProfile": "Update Profile",
+    "updating": "Updating...",
+    "languageSettings": "Language Settings",
+    "selectLanguage": "Select your preferred language",
+    "languageNote": "Choose your preferred language for the application interface."
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Error",
+    "success": "Success",
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "back": "Back",
+    "next": "Next",
+    "previous": "Previous",
+    "search": "Search",
+    "filter": "Filter",
+    "sort": "Sort",
+    "date": "Date",
+    "amount": "Amount",
+    "category": "Category",
+    "description": "Description"
+  }
+}
