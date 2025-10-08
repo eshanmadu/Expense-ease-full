@@ -22,11 +22,12 @@ function SignUp() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, password }),
       });
-      const data = await res.json();
+      
       if (!res.ok) {
-        const message = typeof data?.message === 'string' ? data.message : 'Registration failed';
-        throw new Error(message);
+        throw new Error(`Registration failed: ${res.status} ${res.statusText}`);
       }
+      
+      const data = await res.json();
       if (data?.token) {
         login(data.token, data.user);
       }

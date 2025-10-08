@@ -52,10 +52,12 @@ function Login() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
-      const data = await res.json();
+      
       if (!res.ok) {
-        throw new Error(data?.message || 'Login failed');
+        throw new Error(`Login failed: ${res.status} ${res.statusText}`);
       }
+      
+      const data = await res.json();
       if (data?.token) {
         login(data.token, data.user);
       }
