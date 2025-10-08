@@ -7,18 +7,20 @@ const webpackEnv = (typeof process !== 'undefined' && process && process.env) ? 
 const API_BASE_URL = (
   (viteEnv && viteEnv.VITE_API_URL) ||
   (webpackEnv && (webpackEnv.REACT_APP_API_URL || webpackEnv.VITE_API_URL)) ||
-  ''
+  'https://expense-ease-full.onrender.com'
 );
 
 console.log('Environment Debug:', {
   viteEnv: viteEnv ? Object.keys(viteEnv) : 'undefined',
   webpackEnv: webpackEnv ? Object.keys(webpackEnv).filter(k => k.includes('API')) : 'undefined',
-  API_BASE_URL
+  API_BASE_URL,
+  VITE_API_URL: viteEnv?.VITE_API_URL,
+  REACT_APP_API_URL: webpackEnv?.REACT_APP_API_URL
 });
 
 export async function apiFetch(path, options = {}) {
-  // Use relative path for Vite proxy, or full URL if API_BASE_URL is set
-  const url = path.startsWith('http') ? path : (API_BASE_URL ? `${API_BASE_URL}${path}` : path);
+  // Always use full URL for remote backend
+  const url = path.startsWith('http') ? path : `${API_BASE_URL}${path}`;
   const defaultHeaders = { 'Content-Type': 'application/json' };
   const headers = { ...defaultHeaders, ...(options.headers || {}) };
   
