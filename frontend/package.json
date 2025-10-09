@@ -17,11 +17,12 @@
     "react-router-dom": "^7.9.3",
     "web-vitals": "^2.1.4"
   },
-  "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview"
-  },
+ "scripts": {
+  "dev": "vite",
+  "build": "node --no-warnings ./node_modules/vite/bin/vite.js build",
+  "preview": "vite preview"
+}
+,
   "eslintConfig": {
     "extends": [
       "react-app",
