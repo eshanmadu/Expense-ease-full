@@ -2,24 +2,15 @@ import React, { useEffect, useMemo, useState } from 'react';
 import NavBar from '../components/NavBar';
 import Sidebar from '../components/Sidebar';
 import Footer from '../components/Footer';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
 import { DollarSign, TrendingDown, TrendingUp, BarChart3, ArrowUpRight, Banknote, CreditCard, Building2, Smartphone, Wrench } from 'lucide-react';
-import { apiFetch } from '../utils/api';
 
 function Dashboard() {
   const { token, formatCurrency, currency } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [transactions, setTransactions] = useState([]);
-  const [savingsGoal, setSavingsGoal] = useState(() => {
-    const stored = localStorage.getItem('savingsGoal');
-    return stored ? Number(stored) : 0;
-  });
-  const [goalInput, setGoalInput] = useState(() => {
-    const stored = localStorage.getItem('savingsGoal');
-    return stored ?? '';
-  });
-  const [goalSavedAt, setGoalSavedAt] = useState(0);
 
   const authHeaders = useMemo(() => ({
     'Content-Type': 'application/json',
@@ -28,7 +19,7 @@ function Dashboard() {
 
   const fetchTransactions = async () => {
     try {
-      const res = await apiFetch('/api/transactions', { headers: authHeaders });
+      const res = await fetch('/api/transactions', { headers: authHeaders });
       const data = await res.json();
       if (!res.ok) throw new Error(data?.message || 'Failed to load transactions');
       setTransactions(data);
@@ -87,30 +78,6 @@ function Dashboard() {
       transactionCount: allTransactions.length
     };
   }, [transactions]);
-
-  useEffect(() => {
-    localStorage.setItem('savingsGoal', String(savingsGoal || 0));
-    setGoalInput(String(savingsGoal || ''));
-  }, [savingsGoal]);
-
-  const goalProgressPct = useMemo(() => {
-    if (!savingsGoal || savingsGoal <= 0) return 0;
-    const pct = (metrics.monthlySavings / savingsGoal) * 100;
-    return Math.max(0, Math.min(100, Math.round(pct)));
-  }, [metrics.monthlySavings, savingsGoal]);
-
-  const handleSaveGoal = () => {
-    const numericValue = Number(goalInput);
-    if (Number.isNaN(numericValue) || numericValue < 0) {
-      setGoalInput('0');
-      setSavingsGoal(0);
-      localStorage.setItem('savingsGoal', '0');
-    } else {
-      setSavingsGoal(numericValue);
-      localStorage.setItem('savingsGoal', String(numericValue));
-    }
-    setGoalSavedAt(Date.now());
-  };
 
   // Using formatCurrency from context
 
@@ -192,54 +159,6 @@ function Dashboard() {
                 {error}
               </div>
             ) : null}
-
-            {/* Savings Goal Section */}
-            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200 mb-8">
-              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                <div>
-                  <div className="text-sm text-gray-500">Total Savings</div>
-                  <div className={`${metrics.monthlySavings >= 0 ? 'text-emerald-700' : 'text-rose-700'} text-2xl font-semibold`}>
-                    {renderAmount(metrics.monthlySavings)}
-                  </div>
-                </div>
-                <div className="w-full md:w-auto">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Savings Goal</label>
-                  <div className="flex items-center gap-3">
-                    <input
-                      type="number"
-                      step="0.01"
-                      min="0"
-                      value={goalInput}
-                      onChange={(e) => setGoalInput(e.target.value)}
-                      className="w-full md:w-56 rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-[#7C3AED]/30 focus:border-[#7C3AED]/60"
-                      placeholder="0.00"
-                    />
-                    <button
-                      type="button"
-                      onClick={handleSaveGoal}
-                      className="inline-flex items-center gap-2 rounded-lg bg-[#7C3AED] px-4 py-2 text-white font-medium shadow-sm hover:brightness-110 transition"
-                    >
-                      Save Goal
-                    </button>
-                  </div>
-                  {goalSavedAt > 0 && (
-                    <div className="text-xs text-emerald-600 mt-2">Goal saved</div>
-                  )}
-                </div>
-              </div>
-              <div className="mt-4">
-                <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
-                  <span>Progress</span>
-                  <span>{goalProgressPct}% {savingsGoal > 0 ? `of ${formatCurrency(savingsGoal)}` : ''}</span>
-                </div>
-                <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
-                  <div
-                    className={`h-full ${metrics.monthlySavings >= 0 ? 'bg-emerald-500' : 'bg-rose-500'}`}
-                    style={{ width: `${goalProgressPct}%` }}
-                  />
-                </div>
-              </div>
-            </div>
 
             {/* Key Metrics Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 mb-8 items-stretch">
