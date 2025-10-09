@@ -3,6 +3,7 @@ import NavBar from '../components/NavBar';
 import Sidebar from '../components/Sidebar';
 import Footer from '../components/Footer';
 import { useAuth } from '../context/AuthContext';
+import { apiFetch } from '../utils/api';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '../components/LanguageSwitcher';
 import { Globe } from 'lucide-react';
@@ -31,9 +32,13 @@ function Profile() {
 
   const fetchUserProfile = async () => {
     try {
-      const res = await fetch('/api/auth/profile', { headers: authHeaders });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.message || 'Failed to load profile');
+      const res = await apiFetch('/api/auth/profile', { headers: authHeaders });
+      const contentType = res.headers.get('content-type') || '';
+      const data = contentType.includes('application/json') ? await res.json() : await res.text();
+      if (!res.ok) {
+        const message = typeof data === 'object' && data?.message ? data.message : 'Failed to load profile';
+        throw new Error(message);
+      }
       
       setUser(data.user);
       setFormData({
@@ -82,14 +87,18 @@ function Profile() {
         updateData.newPassword = formData.newPassword;
       }
 
-      const res = await fetch('/api/auth/profile', {
+      const res = await apiFetch('/api/auth/profile', {
         method: 'PUT',
         headers: authHeaders,
         body: JSON.stringify(updateData),
       });
 
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.message || 'Failed to update profile');
+      const contentType = res.headers.get('content-type') || '';
+      const data = contentType.includes('application/json') ? await res.json() : await res.text();
+      if (!res.ok) {
+        const message = typeof data === 'object' && data?.message ? data.message : 'Failed to update profile';
+        throw new Error(message);
+      }
 
       setSuccess('Profile updated successfully');
       setUser(data.user);

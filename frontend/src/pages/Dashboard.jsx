@@ -4,6 +4,7 @@ import Sidebar from '../components/Sidebar';
 import Footer from '../components/Footer';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../context/AuthContext';
+import { apiFetch } from '../utils/api';
 import { DollarSign, TrendingDown, TrendingUp, BarChart3, ArrowUpRight, Banknote, CreditCard, Building2, Smartphone, Wrench } from 'lucide-react';
 
 function Dashboard() {
@@ -19,10 +20,14 @@ function Dashboard() {
 
   const fetchTransactions = async () => {
     try {
-      const res = await fetch('/api/transactions', { headers: authHeaders });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.message || 'Failed to load transactions');
-      setTransactions(data);
+      const res = await apiFetch('/api/transactions', { headers: authHeaders });
+      const contentType = res.headers.get('content-type') || '';
+      const data = contentType.includes('application/json') ? await res.json() : await res.text();
+      if (!res.ok) {
+        const message = typeof data === 'object' && data?.message ? data.message : 'Failed to load transactions';
+        throw new Error(message);
+      }
+      setTransactions(Array.isArray(data) ? data : []);
     } catch (e) {
       setError(e.message);
     }

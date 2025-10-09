@@ -61,13 +61,15 @@ function Transactions() {
     try {
       console.log('Fetching transactions with headers:', authHeaders);
       const res = await apiFetch('/api/transactions', { headers: authHeaders });
-      const data = await res.json();
+      const contentType = res.headers.get('content-type') || '';
+      const data = contentType.includes('application/json') ? await res.json() : await res.text();
       if (!res.ok) {
         console.error('API Error:', data);
-        throw new Error(data?.message || 'Failed to load transactions');
+        const message = typeof data === 'object' && data?.message ? data.message : 'Failed to load transactions';
+        throw new Error(message);
       }
       console.log('Fetched transactions:', data);
-      setTransactions(data);
+      setTransactions(Array.isArray(data) ? data : []);
     } catch (e) {
       console.error('Fetch error:', e);
       setError(e.message);
@@ -102,8 +104,12 @@ function Transactions() {
           date: new Date(formData.date)
         }),
       });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.message || 'Failed to save transaction');
+      const contentType = res.headers.get('content-type') || '';
+      const data = contentType.includes('application/json') ? await res.json() : await res.text();
+      if (!res.ok) {
+        const message = typeof data === 'object' && data?.message ? data.message : 'Failed to save transaction';
+        throw new Error(message);
+      }
 
       setSuccess(editingTransaction ? 'Transaction updated' : 'Transaction added');
       await fetchTransactions();
