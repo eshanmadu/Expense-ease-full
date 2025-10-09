@@ -9,7 +9,7 @@ import { useAuth } from '../context/AuthContext';
 import { Wallet, BarChart3, ShieldCheck, Bell, PieChart, Calendar, Sparkles } from 'lucide-react';
 
 const Home = () => {
-  const { isAuthenticated, formatCurrency } = useAuth();
+  const { isAuthenticated, formatCurrency, user } = useAuth();
   const location = useLocation();
   const { t } = useTranslation();
   const [logoutNotice, setLogoutNotice] = useState('');
@@ -87,6 +87,11 @@ const Home = () => {
           <h1 className="mt-4 text-4xl md:text-6xl font-bold tracking-tight text-[#111827] font-virust">
             ExpenseEase
           </h1>
+          {isAuthenticated && (
+            <p className="mt-2 text-lg text-[#111827] font-medium">
+              Welcome{user?.name ? `, ${user.name}` : ''}!
+            </p>
+          )}
               <p className="mt-4 text-base md:text-lg text-[#374151] max-w-2xl md:max-w-none mx-auto md:mx-0">
                 {t('Home.description')}
           </p>

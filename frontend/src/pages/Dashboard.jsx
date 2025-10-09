@@ -12,6 +12,23 @@ function Dashboard() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [transactions, setTransactions] = useState([]);
+  const [savingsGoal, setSavingsGoal] = useState(() => {
+    try {
+      const stored = localStorage.getItem('savingsGoal');
+      return stored ? Number(stored) : 0;
+    } catch (_) {
+      return 0;
+    }
+  });
+  const [goalInput, setGoalInput] = useState(() => {
+    try {
+      const stored = localStorage.getItem('savingsGoal');
+      return stored ?? '';
+    } catch (_) {
+      return '';
+    }
+  });
+  const [goalSavedAt, setGoalSavedAt] = useState(0);
 
   const authHeaders = useMemo(() => ({
     'Content-Type': 'application/json',
@@ -41,6 +58,28 @@ function Dashboard() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [token]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('savingsGoal', String(savingsGoal || 0));
+      setGoalInput(String(savingsGoal || ''));
+    } catch (_) {}
+  }, [savingsGoal]);
+
+  // moved below metrics to avoid temporal dead zone
+
+  const handleSaveGoal = () => {
+    const numericValue = Number(goalInput);
+    if (Number.isNaN(numericValue) || numericValue < 0) {
+      setGoalInput('0');
+      setSavingsGoal(0);
+      try { localStorage.setItem('savingsGoal', '0'); } catch (_) {}
+    } else {
+      setSavingsGoal(numericValue);
+      try { localStorage.setItem('savingsGoal', String(numericValue)); } catch (_) {}
+    }
+    setGoalSavedAt(Date.now());
+  };
 
   // Calculate metrics
   const metrics = useMemo(() => {
@@ -106,6 +145,12 @@ function Dashboard() {
     }
   };
 
+  const goalProgressPct = useMemo(() => {
+    if (!savingsGoal || savingsGoal <= 0) return 0;
+    const pct = ((metrics?.monthlySavings || 0) / savingsGoal) * 100;
+    return Math.max(0, Math.min(100, Math.round(pct)));
+  }, [savingsGoal, metrics]);
+
   const getCategoryLabel = (category) => {
     const categories = {
       'salary': 'Salary',
@@ -164,6 +209,54 @@ function Dashboard() {
                 {error}
               </div>
             ) : null}
+
+            {/* Savings Goal */}
+            <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-200 mb-8">
+              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+                <div>
+                  <div className="text-sm text-gray-600">Total Savings</div>
+                  <div className={`${(metrics?.monthlySavings || 0) >= 0 ? 'text-emerald-700' : 'text-rose-700'} text-2xl font-semibold`}>
+                    {formatCurrency(metrics?.monthlySavings || 0)}
+                  </div>
+                </div>
+                <div className="w-full md:w-auto">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Savings Goal</label>
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      value={goalInput}
+                      onChange={(e) => setGoalInput(e.target.value)}
+                      className="w-full md:w-56 rounded-lg border border-gray-300 px-3 py-2 focus:ring-2 focus:ring-[#7C3AED]/30 focus:border-[#7C3AED]/60"
+                      placeholder="0.00"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleSaveGoal}
+                      className="inline-flex items-center gap-2 rounded-lg bg-[#7C3AED] px-4 py-2 text-white font-medium shadow-sm hover:brightness-110 transition"
+                    >
+                      Save Goal
+                    </button>
+                  </div>
+                  {goalSavedAt > 0 && (
+                    <div className="text-xs text-emerald-600 mt-2">Goal saved</div>
+                  )}
+                </div>
+              </div>
+              <div className="mt-4">
+                <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
+                  <span>Progress</span>
+                  <span>{goalProgressPct}% {savingsGoal > 0 ? `of ${formatCurrency(savingsGoal)}` : ''}</span>
+                </div>
+                <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+                  <div
+                    className={`h-full ${(metrics?.monthlySavings || 0) >= 0 ? 'bg-emerald-500' : 'bg-rose-500'}`}
+                    style={{ width: `${goalProgressPct}%` }}
+                  />
+                </div>
+              </div>
+            </div>
 
             {/* Key Metrics Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6 mb-8 items-stretch">
